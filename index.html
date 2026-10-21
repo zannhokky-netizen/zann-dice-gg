@@ -4,19 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- ==================== METADATA SEO GOOGLE ==================== -->
+  <!-- Kode Verifikasi Google Search Console Milik Anda -->
+  <meta name="google-site-verification" content="dF5MIW2DPW8wMUieuN20gBdr3z3sXZw_KBR9iiaNvWw" />
+
+  <!-- Metadata SEO Google -->
   <title>ZANN DICE - Official Colored Dice Game & TikTok Live Overlay</title>
   <meta name="description" content="ZANN DICE adalah game dadu warna interaktif untuk TikTok LIVE stream. Mainkan game kocok dadu warna real-time dengan fitur admin rahasia.">
   <meta name="keywords" content="ZANN DICE, Zann Interactive Game, Game TikTok Live, Overlay TikTok Live, Roll Colored Dice, Sasuke Dice">
   <meta name="author" content="ZANN">
   <meta name="robots" content="index, follow">
   
-  <!-- Open Graph untuk Media Sosial (WhatsApp/Facebook/TikTok) -->
+  <!-- Open Graph untuk Media Sosial -->
   <meta property="og:title" content="ZANN DICE - Official Colored Dice Game">
   <meta property="og:description" content="Game Dadu Warna Interaktif ZANN untuk TikTok LIVE Stream.">
   <meta property="og:image" content="https://i.pinimg.com/736x/89/3e/2a/893e2ae9bbd1a49eb6b5df947c458ef2.jpg">
   <meta property="og:type" content="website">
-  <!-- ============================================================ -->
 
   <!-- Firebase SDK Engine -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -319,7 +321,6 @@
         diceDiv.innerHTML = '<div class="dice-dot"></div>';
         container.appendChild(diceDiv);
 
-        // Hentikan animasi sesudah 300ms
         setTimeout(() => {
           diceDiv.classList.remove('dice-rolling');
         }, 300);
@@ -385,7 +386,6 @@
       });
     }
 
-    // Jalankan sekali saat halaman dimuat
     window.onload = () => { rollDice(); };
   </script>
 </body>
