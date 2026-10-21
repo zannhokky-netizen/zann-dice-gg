@@ -3,8 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zann Dice</title>
+
+  <!-- ==================== METADATA SEO GOOGLE ==================== -->
+  <title>ZANN DICE - Official Colored Dice Game & TikTok Live Overlay</title>
+  <meta name="description" content="ZANN DICE adalah game dadu warna interaktif untuk TikTok LIVE stream. Mainkan game kocok dadu warna real-time dengan fitur admin rahasia.">
+  <meta name="keywords" content="ZANN DICE, Zann Interactive Game, Game TikTok Live, Overlay TikTok Live, Roll Colored Dice, Sasuke Dice">
+  <meta name="author" content="ZANN">
+  <meta name="robots" content="index, follow">
   
+  <!-- Open Graph untuk Media Sosial (WhatsApp/Facebook/TikTok) -->
+  <meta property="og:title" content="ZANN DICE - Official Colored Dice Game">
+  <meta property="og:description" content="Game Dadu Warna Interaktif ZANN untuk TikTok LIVE Stream.">
+  <meta property="og:image" content="https://i.pinimg.com/736x/89/3e/2a/893e2ae9bbd1a49eb6b5df947c458ef2.jpg">
+  <meta property="og:type" content="website">
+  <!-- ============================================================ -->
+
   <!-- Firebase SDK Engine -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -90,6 +103,7 @@
       text-shadow: 0 0 10px rgba(255, 157, 0, 0.5);
       margin-bottom: 3px;
       user-select: none;
+      cursor: pointer;
     }
 
     .subtitle { font-size: 0.85rem; font-weight: 700; color: #aaa; letter-spacing: 1.5px; margin-bottom: 20px; }
@@ -127,7 +141,16 @@
       align-items: center;
       justify-content: center;
       box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.3), 0 8px 15px rgba(0,0,0,0.3);
-      transition: transform 0.2s ease;
+      transition: transform 0.2s ease, background 0.3s ease;
+    }
+
+    .dice-rolling {
+      animation: rollAnimation 0.4s ease-in-out infinite alternate;
+    }
+
+    @keyframes rollAnimation {
+      0% { transform: rotate(-12deg) scale(0.95); }
+      100% { transform: rotate(12deg) scale(1.05); }
     }
 
     .dice-dot { width: 16px; height: 16px; background-color: white; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.4); }
@@ -144,7 +167,10 @@
       cursor: pointer;
       text-transform: uppercase;
       box-shadow: 0 5px 20px rgba(124, 58, 237, 0.4);
+      transition: transform 0.1s ease;
     }
+
+    .roll-btn:active { transform: scale(0.98); }
 
     /* Modal Admin Tersembunyi */
     .modal {
@@ -194,14 +220,14 @@
       </div>
     </div>
 
-    <!-- Judul Rahasia (Ketuk 3x tulisan ZANN DICE untuk buka Admin) -->
-    <div class="header-title" id="secretTrigger">ZANN DICE</div>
+    <!-- Ketuk 3x tulisan ZANN DICE untuk membuka Menu Admin Rahasia -->
+    <h1 class="header-title" id="secretTrigger">ZANN DICE</h1>
     <div class="subtitle">ROLL COLORED DICE</div>
 
     <div class="controls">
       <div class="control-group">
-        <label>Jumlah Dadu</label>
-        <select id="diceCount">
+        <label for="diceCount">Jumlah Dadu</label>
+        <select id="diceCount" onchange="rollDice()">
           <option value="1">1 DICE</option>
           <option value="2">2 DICE</option>
           <option value="3">3 DICE</option>
@@ -228,7 +254,7 @@
     <div class="modal-content">
       <h3>Admin Zann Dice</h3>
       <div id="pinSection">
-        <label>Masukkan Password Admin:</label>
+        <label for="pinInput">Masukkan Password Admin:</label>
         <input type="password" id="pinInput" placeholder="Password">
         <div class="modal-actions">
           <button style="background:#555; color:white;" onclick="closeAdmin()">Batal</button>
@@ -249,7 +275,7 @@
   </div>
 
   <script>
-    // Konfigurasi Database Firebase Kakak
+    // Konfigurasi Database Firebase
     const firebaseConfig = {
       databaseURL: "https://zann-c703e-default-rtdb.asia-southeast1.firebasedatabase.app/"
     };
@@ -268,41 +294,39 @@
       { name: 'Purple', hex: '#af52de', active: true }
     ];
 
-    // Listen Perubahan Dari Cloud Server secara rahasia
+    // Sinkronisasi Realtime Dari Firebase
     db.ref('diceSettings/colors').on('value', (snapshot) => {
       const data = snapshot.val();
       if (data) {
         activeColors = data;
-        updateUI();
+        rollDice();
       }
     });
-
-    function updateUI() {
-      const filtered = activeColors.filter(c => c.active);
-      const container = document.getElementById('diceContainer');
-      if (container.children.length === 0 && filtered.length > 0) {
-        for(let i = 0; i < 4; i++) {
-          const col = filtered[i % filtered.length];
-          container.innerHTML += `<div class="dice" style="background:${col.hex}"><div class="dice-dot"></div></div>`;
-        }
-      }
-    }
 
     function rollDice() {
       const count = parseInt(document.getElementById('diceCount').value);
       const filtered = activeColors.filter(c => c.active);
       const container = document.getElementById('diceContainer');
 
-      if (filtered.length === 0) return alert('Atur warna dulu!');
+      if (filtered.length === 0) return alert('Atur warna di admin terlebih dahulu!');
 
       container.innerHTML = '';
       for (let i = 0; i < count; i++) {
         const randColor = filtered[Math.floor(Math.random() * filtered.length)];
-        container.innerHTML += `<div class="dice" style="background:${randColor.hex}"><div class="dice-dot"></div></div>`;
+        const diceDiv = document.createElement('div');
+        diceDiv.className = 'dice dice-rolling';
+        diceDiv.style.background = randColor.hex;
+        diceDiv.innerHTML = '<div class="dice-dot"></div>';
+        container.appendChild(diceDiv);
+
+        // Hentikan animasi sesudah 300ms
+        setTimeout(() => {
+          diceDiv.classList.remove('dice-rolling');
+        }, 300);
       }
     }
 
-    // Trik Rahasia: Ketuk 3x tulisan "ZANN DICE" dengan cepat untuk membuka menu admin
+    // Trik Rahasia: Ketuk 3x judul "ZANN DICE" untuk membuka Admin
     let taps = 0, timer;
     document.getElementById('secretTrigger').addEventListener('click', () => {
       taps++;
@@ -311,6 +335,7 @@
         document.getElementById('adminModal').style.display = 'flex';
         document.getElementById('pinSection').style.display = 'block';
         document.getElementById('settingsSection').style.display = 'none';
+        document.getElementById('pinInput').value = '';
         taps = 0;
       } else {
         timer = setTimeout(() => { taps = 0; }, 500);
@@ -353,12 +378,15 @@
         });
       });
 
-      // Kirim Data Settingan Baru Langsung Ke Seluruh HP Penonton Lewat Firebase Cloud
+      // Simpan perubahan ke Firebase
       db.ref('diceSettings/colors').set(updated).then(() => {
         alert('Pengaturan Warna Berhasil Dikirim Ke Seluruh HP Penonton!');
         closeAdmin();
       });
     }
+
+    // Jalankan sekali saat halaman dimuat
+    window.onload = () => { rollDice(); };
   </script>
 </body>
 </html>
